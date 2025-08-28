@@ -119,20 +119,35 @@ async function loadPokemon() {
 async function fetchPokemonData(pokemonId) {
     try {
         // TODO 2.1: Hacer una petición fetch a la API
-        // PISTA: const response = await fetch(POKEAPI_BASE_URL + pokemonId);
+        const response = await fetch(POKEAPI_BASE_URL + pokemonId);
         // ¿Por qué usamos await? ¡Porque fetch() devuelve una promesa!
         
         /* ESCRIBE TU CÓDIGO AQUÍ */
         
         
         // TODO 2.2: Verificar si la respuesta es exitosa
-        // PISTA: if (!response.ok) { throw new Error(`Error HTTP: ${response.status}`); }
+        if (!response.ok) { throw new Error(`Error HTTP: ${response.status}`); }
         
         /* ESCRIBE TU CÓDIGO AQUÍ */
         
         
         // TODO 2.3: Convertir la respuesta a JSON
-        // PISTA: const pokemonData = await response.json();
+        const pokemonData = await response.json();
+        console.log('return:',{
+           id:pokemonData.id,
+            name: pokemonData.name,
+            height: pokemonData.height,
+            weight: pokemonData.weight,
+            types: pokemonData.types.map(type => type.type.name),
+            sprite: pokemonData.sprites.other['official-artwork'].front_default || pokemonData.sprites.front_default,
+            ataque: pokemonData.stats[1].base_stat,
+            defensa: pokemonData.stats[2].base_stat,
+            velocidad: pokemonData.stats[3].base_stat
+            // ataque: 4,
+            // defensa: 3,
+            // velocidad: 2
+
+        })
         // ¿Por qué usamos await? ¡Porque .json() también devuelve una promesa!
         
         /* ESCRIBE TU CÓDIGO AQUÍ */
@@ -142,17 +157,25 @@ async function fetchPokemonData(pokemonId) {
         // PISTA: Devuelve un objeto con: id, name, height, weight, types, sprite
         // Para types: pokemonData.types.map(type => type.type.name)
         // Para sprite: pokemonData.sprites.other['official-artwork'].front_default || pokemonData.sprites.front_default
-        
+        console.log(pokemonData)
         /* ESCRIBE TU CÓDIGO AQUÍ */
-        return {
-            // id: ?,
-            // name: ?,
-            // height: ?,
-            // weight: ?,
-            // types: ?,
-            // sprite: ?
+        return { 
+            id:pokemonData.id,
+            name: pokemonData.name,
+            height: pokemonData.height,
+            weight: pokemonData.weight,
+            types: pokemonData.types.map(type => type.type.name),
+            sprite: pokemonData.sprites.other['official-artwork'].front_default || pokemonData.sprites.front_default,
+            ataque: pokemonData.stats[1].base_stat,
+            defensa: pokemonData.stats[2].base_stat,
+            velocidad: pokemonData.stats[5].base_stat,
+            forma: pokemonData.forms.map(form => form.name),
+
+            
+
         };
         
+
     } catch (error) {
         // TODO 2.5: Manejar errores
         // PISTA: Muestra el error en consola y relanza el error con throw
@@ -173,11 +196,13 @@ async function fetchPokemonData(pokemonId) {
 
 function renderPokemonCards(pokemonList) {
     // TODO 3.1: Limpiar el contenedor
-    // PISTA: pokemonContainer.innerHTML = '';
+    pokemonContainer.innerHTML = '';
     
     /* ESCRIBE TU CÓDIGO AQUÍ */
-    
-    
+    pokemonList.forEach(pokemonFor => {
+        const card = createPokemonCard(pokemonFor);
+        pokemonContainer.appendChild(card);
+    });
     // TODO 3.2: Crear una tarjeta para cada Pokemon
     // PISTA: Usa forEach() para recorrer pokemonList
     // Dentro del forEach, usa createPokemonCard() y appendChild()
@@ -204,6 +229,13 @@ function createPokemonCard(pokemon) {
     // Convertir altura de decímetros a metros y peso de hectogramos a kg
     const heightInMeters = (pokemon.height / 10).toFixed(1);
     const weightInKg = (pokemon.weight / 10).toFixed(1);
+    // const velocidad = (pokemon.velocidad / 10).toFixed(1);
+    // const ataque = (pokemon.ataque / 10).toFixed(1);
+    // const defensa = (pokemon.defensa / 10).toFixed(1);
+    const velocidad = pokemon.velocidad;
+    const ataque = pokemon.ataque;
+    const defensa = pokemon.defensa;
+    const forma = pokemon.forma;
     
     // Crear los badges de tipos
     const typeBadges = pokemon.types.map(type => 
@@ -212,7 +244,12 @@ function createPokemonCard(pokemon) {
     
     card.innerHTML = `
         <div class="pokemon-id">#${pokemon.id.toString().padStart(3, '0')}</div>
-        
+        <a id="#${pokemon.name}" class="mas_informacion">☢</a>
+            <div id="${pokemon.name}" class="modal">
+                <p>Esta es su forma ${forma}</p>
+                <a href="#">Cerrar</a>
+            </div>
+
         <div class="pokemon-image">
             <img src="${pokemon.sprite}" alt="${pokemon.name}" loading="lazy">
         </div>
@@ -228,15 +265,31 @@ function createPokemonCard(pokemon) {
                 <div class="stat-label">Peso</div>
                 <div class="stat-value">${weightInKg}kg</div>
             </div>
+            <div class="stat">
+                <div class="stat-label">Ataque</div>
+                <div class="stat-value">${ataque}</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Defensa</div>
+                <div class="stat-value">${defensa}</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Velocidad</div>
+                <div class="stat-value">${velocidad}</div>
+            </div>
+            <div class="stat">
+            </div>
+        <div class="pokemon-types">
+            ${typeBadges}        
         </div>
         
-        <div class="pokemon-types">
-            ${typeBadges}
-        </div>
+        
     `;
     
     return card;
 }
+
+
 
 // ✅ Funciones para manejar la visibilidad de elementos (YA COMPLETADAS)
 function showLoading() {
@@ -298,3 +351,4 @@ document.addEventListener('error', function(e) {
    4. Añade un campo de búsqueda por nombre
    
 ============================================== */
+

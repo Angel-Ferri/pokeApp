@@ -297,3 +297,13 @@ footer a:hover {
         max-height: 100px;
     }
 }
+
+    .modal {
+        display: none;
+        /* Oculto por defecto */
+    }
+
+    #mi-modal:target {
+        display: block;
+        /* Se vuelve visible cuando se accede por su target */
+    }
